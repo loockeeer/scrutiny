@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="flex flex-col mx-6 my-3 xs:w-full">
-            <div class="font-semibold text-xs text-hint uppercase tracking-wider leading-none">Status</div>
+            <div class="font-semibold text-xs text-hint uppercase tracking-wider leading-none">Selftest Status</div>
             <div class="mt-2 font-medium text-3xl leading-none"
                  *ngIf="deviceSummary.smart?.collector_date; else unknownStatus">{{ deviceTestStatus(deviceSummary.device) | titlecase}}</div>
             <ng-template #unknownStatus><div class="mt-2 font-medium text-3xl leading-none">No Data</div></ng-template>
