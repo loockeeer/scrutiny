@@ -26,6 +26,7 @@ type Smart struct {
 
 	//status
 	Status pkg.DeviceStatus
+	TestPercent int `json:"test_percent"`
 }
 
 func (sm *Smart) Flatten() (tags map[string]string, fields map[string]interface{}) {
@@ -117,6 +118,7 @@ func (sm *Smart) FromCollectorSmartInfo(wwn string, info collector.SmartInfo) er
 	// process ATA/NVME/SCSI protocol data
 	sm.Attributes = map[string]SmartAttribute{}
 	if sm.DeviceProtocol == pkg.DeviceProtocolAta {
+		sm.ProcessAtaSmartTests(info)
 		sm.ProcessAtaSmartInfo(info.AtaSmartAttributes.Table)
 	} else if sm.DeviceProtocol == pkg.DeviceProtocolNvme {
 		sm.ProcessNvmeSmartInfo(info.NvmeSmartHealthInformationLog)
@@ -126,6 +128,24 @@ func (sm *Smart) FromCollectorSmartInfo(wwn string, info collector.SmartInfo) er
 
 	return nil
 }
+
+func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
+	if info.AtaSmartData.SelfTest.Status.Value != 0 {
+		// Test in progress
+		sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusTesting)
+		sm.TestPercent = info.AtaSmartData.SelfTest.Status.RemainingPercent
+	} else {
+		sm.Status = pkg.DeviceStatusClear(sm.Status, pkg.DeviceStatusTesting)
+	}
+
+	for _, test := range info.AtaSmartSelfTestLog.Standard.Table {
+		if !test.Status.Passed {
+			// If there is a non-passing test, set disk status to failed
+			sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusFailedScrutiny)
+		}
+	}
+	return nil
+} 
 
 //generate SmartAtaAttribute entries from Scrutiny Collector Smart data.
 func (sm *Smart) ProcessAtaSmartInfo(tableItems []collector.AtaSmartAttributesTableItem) {

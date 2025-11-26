@@ -24,4 +24,5 @@ export interface DeviceModel {
     host_id: string;
 
     device_status: number;
+    test_percent:  number;
 }

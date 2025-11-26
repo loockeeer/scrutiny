@@ -45,6 +45,7 @@ type Device struct {
 
 	// Data set by Scrutiny
 	DeviceStatus pkg.DeviceStatus `json:"device_status"`
+	TestPercent  int			  `json:"test_percent"`
 }
 
 func (dv *Device) IsAta() bool {

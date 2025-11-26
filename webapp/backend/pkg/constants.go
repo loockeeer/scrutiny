@@ -31,6 +31,7 @@ const (
 	DeviceStatusPassed         DeviceStatus = 0
 	DeviceStatusFailedSmart    DeviceStatus = 1
 	DeviceStatusFailedScrutiny DeviceStatus = 2
+	DeviceStatusTesting        DeviceStatus = 4
 )
 
 func DeviceStatusSet(b, flag DeviceStatus) DeviceStatus    { return b | flag }

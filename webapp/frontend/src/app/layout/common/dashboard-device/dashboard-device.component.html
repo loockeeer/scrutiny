@@ -14,13 +14,19 @@
                   *ngIf="deviceStatusForModelWithThreshold(deviceSummary.device, !!deviceSummary.smart, config.metrics.status_threshold) == 'unknown'"
                   [svgIcon]="'heroicons_outline:question-mark-circle'"></mat-icon>
     </div>
-    <div class="flex items-center">
+    <div class="flex items-center justify-between">
         <div class="flex flex-col">
             <a [routerLink]="'/device/'+ deviceSummary.device.wwn"
                class="font-bold text-md text-secondary uppercase tracking-wider">{{deviceSummary.device | deviceTitle:config.dashboard_display}}</a>
             <div [ngClass]="classDeviceLastUpdatedOn(deviceSummary)" class="font-medium text-sm" *ngIf="deviceSummary.smart">
                 Last Updated on {{deviceSummary.smart.collector_date | date:'MMMM dd, yyyy - HH:mm' }}
             </div>
+        </div>
+        <div class="flex flex-col mx-6 my-3 xs:w-full">
+            <div class="font-semibold text-xs text-hint uppercase tracking-wider leading-none">Status</div>
+            <div class="mt-2 font-medium text-3xl leading-none"
+                 *ngIf="deviceSummary.smart?.collector_date; else unknownStatus">{{ deviceTestStatus(deviceSummary.device) | titlecase}</div>
+            <ng-template #unknownStatus><div class="mt-2 font-medium text-3xl leading-none">No Data</div></ng-template>
         </div>
         <div class="ml-auto" *ngIf="deviceSummary.device">
             <mat-icon *ngIf="deviceSummary.device.archived"

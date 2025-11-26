@@ -35,6 +35,7 @@ func UploadDeviceMetrics(c *gin.Context) {
 	}
 
 	//update the device information if necessary
+	// TODO : inspect necessity 
 	updatedDevice, err := deviceRepo.UpdateDevice(c, c.Param("wwn"), collectorSmartData)
 	if err != nil {
 		logger.Errorln("An error occurred while updating device data from smartctl metrics:", err)
@@ -50,14 +51,12 @@ func UploadDeviceMetrics(c *gin.Context) {
 		return
 	}
 
-	if smartData.Status != pkg.DeviceStatusPassed {
-		//there is a failure detected by Scrutiny, update the device status on the homepage.
-		updatedDevice, err = deviceRepo.UpdateDeviceStatus(c, c.Param("wwn"), smartData.Status)
-		if err != nil {
-			logger.Errorln("An error occurred while updating device status", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"success": false})
-			return
-		}
+	// Update device status always
+	updatedDevice, err = deviceRepo.UpdateDeviceStatus(c, c.Param("wwn"), smartData.Status)
+	if err != nil {
+		logger.Errorln("An error occurred while updating device status", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false})
+		return
 	}
 
 	// save smart temperature data (ignore failures)
