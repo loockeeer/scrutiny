@@ -27,6 +27,6 @@ export class DeviceTestStatusPipe implements PipeTransform {
         deviceModel: DeviceModel,
         hasSmartResults: boolean = true,
     ): string {
-        return DeviceStatusPipe.deviceStatusForModelWithThreshold(deviceModel, hasSmartResults)
+        return DeviceTestStatusPipe.deviceTestStatus(deviceModel, hasSmartResults)
     }
 }
