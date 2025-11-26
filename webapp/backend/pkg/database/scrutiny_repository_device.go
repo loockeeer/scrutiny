@@ -30,7 +30,7 @@ func (sr *scrutinyRepository) RegisterDevice(ctx context.Context, dev models.Dev
 func (sr *scrutinyRepository) GetDevices(ctx context.Context) ([]models.Device, error) {
 	//Get a list of all the active devices.
 	devices := []models.Device{}
-	if err := sr.gormClient.WithContext(ctx).Find(&devices).Error; err != nil {
+	if err := sr.gormClient.WithContext(ctx).Preload("DeviceTest").Find(&devices).Error; err != nil {
 		return nil, fmt.Errorf("Could not get device summary from DB: %v", err)
 	}
 	return devices, nil

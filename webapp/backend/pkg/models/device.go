@@ -4,6 +4,7 @@ import (
 	"github.com/analogj/scrutiny/webapp/backend/pkg"
 	"github.com/analogj/scrutiny/webapp/backend/pkg/models/collector"
 	"time"
+	"encoding/json"
 )
 
 type DeviceWrapper struct {
@@ -42,6 +43,8 @@ type Device struct {
 	// User provided metadata
 	Label  string `json:"label"`
 	HostId string `json:"host_id"`
+
+	DeviceTests string `json:"device_tests"`
 
 	// Data set by Scrutiny
 	DeviceStatus pkg.DeviceStatus `json:"device_status"`
@@ -166,7 +169,14 @@ func (dv *Device) IsNvme() bool {
 func (dv *Device) UpdateFromCollectorSmartInfo(info collector.SmartInfo) error {
 	dv.Firmware = info.FirmwareVersion
 	dv.DeviceProtocol = info.Device.Protocol
-
+	if dv.IsAta() {
+		// Update tests iff device is ATA
+		data, err := json.Marshal(info.AtaSmartSelfTestLog.Standard.Table);
+		if err != nil {
+			return err
+		}
+		dv.DeviceTests = string(data)
+	}
 	if !info.SmartStatus.Passed {
 		dv.DeviceStatus = pkg.DeviceStatusSet(dv.DeviceStatus, pkg.DeviceStatusFailedSmart)
 	}

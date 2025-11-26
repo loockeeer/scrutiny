@@ -23,6 +23,8 @@ export interface DeviceModel {
     label: string;
     host_id: string;
 
+    device_tests: string;
+
     device_status: number;
     test_percent:  number;
 }
