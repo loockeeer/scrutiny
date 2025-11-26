@@ -17,6 +17,9 @@ import (
 // insert device into DB (and update specified columns if device is already registered)
 // update device fields that may change: (DeviceType, HostID)
 func (sr *scrutinyRepository) RegisterDevice(ctx context.Context, dev models.Device) error {
+	if dev.DeviceTests == "" {
+		dev.DeviceTests = "[]"
+	}
 	if err := sr.gormClient.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "wwn"}},
 		DoUpdates: clause.AssignmentColumns([]string{"host_id", "device_name", "device_type", "device_uuid", "device_serial_id", "device_label"}),
@@ -30,7 +33,7 @@ func (sr *scrutinyRepository) RegisterDevice(ctx context.Context, dev models.Dev
 func (sr *scrutinyRepository) GetDevices(ctx context.Context) ([]models.Device, error) {
 	//Get a list of all the active devices.
 	devices := []models.Device{}
-	if err := sr.gormClient.WithContext(ctx).Preload("DeviceTest").Find(&devices).Error; err != nil {
+	if err := sr.gormClient.WithContext(ctx).Find(&devices).Error; err != nil {
 		return nil, fmt.Errorf("Could not get device summary from DB: %v", err)
 	}
 	return devices, nil

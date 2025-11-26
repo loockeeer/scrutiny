@@ -409,6 +409,12 @@ func (sr *scrutinyRepository) Migrate(ctx context.Context) error {
 				return tx.AutoMigrate(m20250221084400.Device{})
 			},
 		},
+		{
+			ID: "202511260000000",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(models.Device{})
+			},
+		},
 	})
 
 	if err := m.Migrate(); err != nil {

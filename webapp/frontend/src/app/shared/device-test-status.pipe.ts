@@ -1,5 +1,4 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {MetricsStatusThreshold} from '../core/config/app.config';
 import {DeviceModel} from '../core/models/device-model';
 
 @Pipe({

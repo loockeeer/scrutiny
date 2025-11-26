@@ -17,13 +17,30 @@ import {SmartModel} from 'app/core/models/measurements/smart-model';
 import {SmartAttributeModel} from 'app/core/models/measurements/smart-attribute-model';
 import {AttributeMetadataModel} from 'app/core/models/thresholds/attribute-metadata-model';
 import {DeviceStatusPipe} from 'app/shared/device-status.pipe';
-
+import {SmartSelftestModel} from 'app/core/models/measurements/smart-selftest-model';
 // from Constants.go - these must match
 const AttributeStatusPassed = 0
 const AttributeStatusFailedSmart = 1
 const AttributeStatusWarningScrutiny = 2
 const AttributeStatusFailedScrutiny = 4
 
+
+function hoursToYdhm(totalHours) {
+  const minutes = Math.floor((totalHours % 1) * 60); // if input may include decimals
+  const hours = Math.floor(totalHours);
+
+  const years = Math.floor(hours / (24 * 365));
+  const days  = Math.floor((hours % (24 * 365)) / 24);
+  const hrs   = hours % 24;
+
+  let parts = [];
+  if (years) parts.push(`${years}y`);
+  if (days)  parts.push(`${days}d`);
+  if (hrs)   parts.push(`${hrs}h`);
+  if (minutes) parts.push(`${minutes}m`);
+
+  return parts.join(" ");
+}
 
 @Component({
     selector: 'detail',
@@ -59,8 +76,10 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Set the defaults
         this.smartAttributeDataSource = new MatTableDataSource();
-        // this.recentTransactionsTableColumns = ['status', 'id', 'name', 'value', 'worst', 'thresh'];
         this.smartAttributeTableColumns = ['status', 'id', 'name', 'value', 'worst', 'thresh', 'ideal', 'failure', 'history'];
+
+        this.smartSelftestsTableColumns = ['st_status', 'st_type', 'st_elapsed', 'st_log'];
+        this.smartSelftestsDataSource = new MatTableDataSource();
 
         this.systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -80,6 +99,9 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
     commonSparklineOptions: Partial<ApexOptions>;
     smartAttributeDataSource: MatTableDataSource<SmartAttributeModel>;
     smartAttributeTableColumns: string[];
+
+    smartSelftestsDataSource: MatTableDataSource<SmartSelftestModel>;
+    smartSelftestsTableColumns: string[];
 
     @ViewChild('smartAttributeTable', {read: MatSort})
     smartAttributeTableMatSort: MatSort;
@@ -122,6 +144,47 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Store the table data
                 this.smartAttributeDataSource.data = this._generateSmartAttributeTableDataSource(this.smart_results);
 
+                // Store the selftests table data
+                this.smartSelftestsDataSource.data = (respWrapper.data.device.device_tests ? JSON.parse(respWrapper.data.device.device_tests) : [
+        {
+        type: {
+          value: 2,
+          string: "Extended"
+        },
+        status: {
+          value: 0,
+          string: "Completed without error",
+          passed: true,
+        },
+        lifetime_hours: 2936
+      },
+              {
+        type: {
+          value: 1,
+          string: "Short"
+        },
+        status: {
+          value: 1,
+          string: "Test stopped because of an error",
+          passed: true,
+        },
+        lifetime_hours: 1800
+      },
+              {
+        type: {
+          value: 2,
+          string: "Extended"
+        },
+        status: {
+          value: 0,
+          string: "Completed without error",
+          passed: true,
+        },
+        lifetime_hours: 700
+      },
+                ]).sort(({lifetime_hours: a},{lifetime_hours: b}) => a-b)
+                console.log(this.smartSelftestsDataSource.data)
+
                 // Prepare the chart data
                 this._prepareChartData();
             });
@@ -147,6 +210,28 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    getSelftestStatus(status: {
+        value: number
+        string: string
+        passed: boolean
+    }): string {
+        if (status.passed) {
+            return "passed"
+        } else {
+            if(status.value != 0) return "failed"
+            return "ongoing"
+        }
+    }
+
+    getSelftestElapsedTime(lifetime_hours: number): string {
+        const elapsed = this.smart_results[0].power_on_hours - lifetime_hours;
+        return hoursToYdhm(elapsed);
+    }
+
+    getSelftestCritical(selftest: SmartSelftestModel): boolean {
+        return !selftest.status.passed
+    }
 
     getAttributeStatusName(attributeStatus: number): string {
         // tslint:disable:no-bitwise

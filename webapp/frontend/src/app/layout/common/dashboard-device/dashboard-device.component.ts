@@ -11,6 +11,7 @@ import {DeviceSummaryModel} from 'app/core/models/device-summary-model';
 import {DeviceStatusPipe} from 'app/shared/device-status.pipe';
 import {DashboardDeviceArchiveDialogComponent} from '../dashboard-device-archive-dialog/dashboard-device-archive-dialog.component';
 import {DashboardDeviceArchiveDialogService} from '../dashboard-device-archive-dialog/dashboard-device-archive-dialog.service';
+import {DeviceTestStatusPipe} from 'app/shared/device-test-status.pipe';
 
 @Component({
     selector: 'app-dashboard-device',
@@ -38,7 +39,7 @@ export class DashboardDeviceComponent implements OnInit {
     private _unsubscribeAll: Subject<void>;
 
     deviceStatusForModelWithThreshold = DeviceStatusPipe.deviceStatusForModelWithThreshold
-
+    deviceTestStatus = DeviceTestStatusPipe.deviceTestStatus
     ngOnInit(): void {
         // Subscribe to config changes
         this._configService.config$
