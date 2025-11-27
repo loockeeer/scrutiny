@@ -147,6 +147,7 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Store the selftests table data
                 try {
                     this.smartSelftestsDataSource.data = JSON.parse(respWrapper.data.device.device_tests)?.sort(({lifetime_hours: a},{lifetime_hours: b}) => b-a)
+                    console.log(this.smartSelftestsDataSource.data)
                 } catch { 
                     this.smartSelftestsDataSource.data = []
                 }
