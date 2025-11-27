@@ -145,46 +145,11 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.smartAttributeDataSource.data = this._generateSmartAttributeTableDataSource(this.smart_results);
 
                 // Store the selftests table data
-                this.smartSelftestsDataSource.data = (respWrapper.data.device.device_tests ? JSON.parse(respWrapper.data.device.device_tests) : [
-        {
-        type: {
-          value: 2,
-          string: "Extended"
-        },
-        status: {
-          value: 0,
-          string: "Completed without error",
-          passed: true,
-        },
-        lifetime_hours: 2936
-      },
-              {
-        type: {
-          value: 1,
-          string: "Short"
-        },
-        status: {
-          value: 1,
-          string: "Test stopped because of an error",
-          passed: true,
-        },
-        lifetime_hours: 1800
-      },
-              {
-        type: {
-          value: 2,
-          string: "Extended"
-        },
-        status: {
-          value: 0,
-          string: "Completed without error",
-          passed: true,
-        },
-        lifetime_hours: 700
-      },
-                ]).sort(({lifetime_hours: a},{lifetime_hours: b}) => a-b)
-                console.log(this.smartSelftestsDataSource.data)
-
+                try {
+                    this.smartSelftestsDataSource.data = JSON.parse(respWrapper.data.device.device_tests)?.sort(({lifetime_hours: a},{lifetime_hours: b}) => b-a)
+                } catch { 
+                    this.smartSelftestsDataSource.data = []
+                }
                 // Prepare the chart data
                 this._prepareChartData();
             });
