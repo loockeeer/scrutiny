@@ -196,7 +196,7 @@ export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     getSelftestCritical(selftest: SmartSelftestModel): boolean {
-        return !selftest.status.passed && selftest.status.value != 38
+        return !selftest.status.passed && !selftest.status.string.includes("reset")
     }
 
     getAttributeStatusName(attributeStatus: number): string {
