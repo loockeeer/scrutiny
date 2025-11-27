@@ -130,10 +130,11 @@ func (sm *Smart) FromCollectorSmartInfo(wwn string, info collector.SmartInfo) er
 }
 
 func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
+	log.Info("TEST : %v\n", info.AtaSmartData.SelfTest)
 	if info.AtaSmartData.SelfTest.Status.Value != 0 {
 		// Test in progress
 		sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusTesting)
-		sm.TestPercent = info.AtaSmartData.SelfTest.Status.RemainingPercent
+		sm.TestPercent = 100-info.AtaSmartData.SelfTest.Status.RemainingPercent
 	} else {
 		sm.Status = pkg.DeviceStatusClear(sm.Status, pkg.DeviceStatusTesting)
 	}
@@ -141,7 +142,7 @@ func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
 	for _, test := range info.AtaSmartSelfTestLog.Extended.Table {
 		if !test.Status.Passed {
 			// If there is a non-passing test, set disk status to failed
-			sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusFailedScrutiny)
+			sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusFailedScrutiny | pkg.DeviceStatusFailedSmart)
 		}
 	}
 	return nil
