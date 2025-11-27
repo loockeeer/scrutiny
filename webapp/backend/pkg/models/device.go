@@ -176,6 +176,13 @@ func (dv *Device) UpdateFromCollectorSmartInfo(info collector.SmartInfo) error {
 			return err
 		}
 		dv.DeviceTests = string(data)
+		if info.AtaSmartData.SelfTest.Status.Value != 0 {
+			// Test in progress
+			dv.DeviceStatus = pkg.DeviceStatusSet(dv.DeviceStatus, pkg.DeviceStatusTesting)
+			dv.TestPercent = 100-info.AtaSmartData.SelfTest.Status.RemainingPercent
+		} else {
+			dv.DeviceStatus = pkg.DeviceStatusClear(dv.DeviceStatus, pkg.DeviceStatusTesting)
+		}
 	}
 	if !info.SmartStatus.Passed {
 		dv.DeviceStatus = pkg.DeviceStatusSet(dv.DeviceStatus, pkg.DeviceStatusFailedSmart)
