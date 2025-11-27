@@ -154,7 +154,6 @@ OPTIONS:
 			},
 		},
 	}
-	log.Println("salut c'est nous")
 	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(color.HiRedString("ERROR: %v", err))
