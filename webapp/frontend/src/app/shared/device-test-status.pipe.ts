@@ -14,7 +14,7 @@ export class DeviceTestStatusPipe implements PipeTransform {
         }
 
         // tslint:disable-next-line:no-bitwise
-        if(deviceModel.device_status & 3) {
+        if(deviceModel.device_status & 4) {
             // Device is currently undergoing a test
             return `ongoing: ${deviceModel.test_percent}%`
         } else {
