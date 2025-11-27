@@ -130,7 +130,7 @@ func (sm *Smart) FromCollectorSmartInfo(wwn string, info collector.SmartInfo) er
 }
 
 func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
-	log.Infoln("TEST : %v\n", info.AtaSmartData.SelfTest)
+	log.Println("TEST : %v\n", info.AtaSmartData.SelfTest)
 	if info.AtaSmartData.SelfTest.Status.Value != 0 {
 		// Test in progress
 		sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusTesting)
