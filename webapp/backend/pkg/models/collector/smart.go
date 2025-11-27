@@ -166,7 +166,7 @@ type SmartInfo struct {
 		} `json:"summary"`
 	} `json:"ata_smart_error_log"`
 	AtaSmartSelfTestLog struct {
-		Standard struct {
+		Extended struct {
 			Revision int `json:"revision"`
 			Table    []struct {
 				Type struct {
@@ -183,7 +183,7 @@ type SmartInfo struct {
 			Count              int `json:"count"`
 			ErrorCountTotal    int `json:"error_count_total"`
 			ErrorCountOutdated int `json:"error_count_outdated"`
-		} `json:"standard"`
+		} `json:"extended"`
 	} `json:"ata_smart_self_test_log"`
 	AtaSmartSelectiveSelfTestLog struct {
 		Revision int `json:"revision"`

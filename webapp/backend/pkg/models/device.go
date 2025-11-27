@@ -171,7 +171,7 @@ func (dv *Device) UpdateFromCollectorSmartInfo(info collector.SmartInfo) error {
 	dv.DeviceProtocol = info.Device.Protocol
 	if dv.IsAta() {
 		// Update tests iff device is ATA
-		data, err := json.Marshal(info.AtaSmartSelfTestLog.Standard.Table);
+		data, err := json.Marshal(info.AtaSmartSelfTestLog.Extended.Table);
 		if err != nil {
 			return err
 		}

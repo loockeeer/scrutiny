@@ -138,7 +138,7 @@ func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
 		sm.Status = pkg.DeviceStatusClear(sm.Status, pkg.DeviceStatusTesting)
 	}
 
-	for _, test := range info.AtaSmartSelfTestLog.Standard.Table {
+	for _, test := range info.AtaSmartSelfTestLog.Extended.Table {
 		if !test.Status.Passed {
 			// If there is a non-passing test, set disk status to failed
 			sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusFailedScrutiny)
