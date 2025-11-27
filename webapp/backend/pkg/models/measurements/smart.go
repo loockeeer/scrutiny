@@ -140,7 +140,7 @@ func (sm *Smart) ProcessAtaSmartTests(info collector.SmartInfo) error {
 	}
 
 	for _, test := range info.AtaSmartSelfTestLog.Extended.Table {
-		if !test.Status.Passed {
+		if !test.Status.Passed && test.Status != 38 { // 38 means host reset
 			// If there is a non-passing test, set disk status to failed
 			sm.Status = pkg.DeviceStatusSet(sm.Status, pkg.DeviceStatusFailedScrutiny | pkg.DeviceStatusFailedSmart)
 		}
